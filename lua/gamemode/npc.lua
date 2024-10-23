@@ -40,3 +40,31 @@ hook.Add("PlayerUse", "NPCDialogueTrigger", function(player, entity)
         return false -- Prevent default use action
     end
 end)
+
+-- Example NPC entity with dialogue
+DEFINE_BASECLASS("base_gmodentity")
+
+ENT.Type = "anim"
+ENT.Base = "base_gmodentity"
+
+function ENT:Initialize()
+    self:SetModel("models/your_model.mdl")
+end
+
+function ENT:OnTakeDamage(dmg)
+    -- Logic for taking damage (if applicable)
+end
+
+function ENT:Use(activator, caller)
+    if IsValid(activator) and activator:IsPlayer() then
+        -- Show dialogue
+        net.Start("ShowNPCDialogue")
+        net.Send(activator)
+    end
+end
+
+-- Client-side code to handle dialogue
+net.Receive("ShowNPCDialogue", function()
+    -- Display dialogue box with NPC text
+    -- Implement a similar UI as the gamemode selection
+end)

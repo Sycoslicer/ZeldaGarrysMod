@@ -60,3 +60,38 @@ end)
 concommand.Add("view_quests", function(ply)
     ViewQuests(ply)
 end)
+
+function GM:SavePlayerProgress(ply)
+    -- Save player's current state (location, items, etc.)
+    local data = {
+        position = ply:GetPos(),
+        items = ply:GetInventory(),
+        dungeons_completed = ply.dungeons_completed
+    }
+    ply:SetNWString("SavedData", util.TableToJSON(data))
+end
+
+function GM:LoadPlayerProgress(ply)
+    local data = util.JSONToTable(ply:GetNWString("SavedData"))
+    if data then
+        ply:SetPos(data.position)
+        ply:SetInventory(data.items)
+        ply.dungeons_completed = data.dungeons_completed
+    end
+end
+
+function GM:OnDayNightChange(isDay)
+    if isDay then
+        -- Remove enemies
+        for _, v in pairs(ents.FindByClass("your_enemy_class")) do
+            v:Remove()
+        end
+    else
+        -- Spawn enemies
+        for i = 1, 5 do
+            local enemy = ents.Create("your_enemy_class")
+            enemy:SetPos(Vector(math.random(-1000, 1000), math.random(-1000, 1000), 0))
+            enemy:Spawn()
+        end
+    end
+end
